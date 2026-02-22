@@ -1,42 +1,139 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: #0b0f19;
+  color: #e2e8f0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
 }
 
 .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #00f5ff, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 25px;
 }
 
 .card {
-  padding: 2em;
+  background: #111827;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid #1f2937;
+  transition: 0.3s ease;
 }
 
-.read-the-docs {
-  color: #888;
+.card:hover {
+  transform: translateY(-6px);
+  border-color: #00f5ff;
+  box-shadow: 0 0 20px rgba(0,245,255,0.2);
+}
+
+.description {
+  opacity: 0.6;
+  margin: 10px 0;
+}
+
+.price {
+  font-size: 20px;
+  font-weight: bold;
+  color: #00f5ff;
+  margin-bottom: 10px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  background: linear-gradient(90deg, #00f5ff, #3b82f6);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #0b0f19;
+}
+
+button.secondary {
+  background: #ef4444;
+  color: white;
+}
+.form-card {
+  background: #111827;
+  padding: 25px;
+  border-radius: 16px;
+  margin-bottom: 40px;
+  border: 1px solid #1f2937;
+}
+
+.form-card input,
+.form-card textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #1f2937;
+  background: #0f172a;
+  color: white;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.primary-btn {
+  background: linear-gradient(90deg, #00f5ff, #3b82f6);
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #0b0f19;
+}
+
+.secondary-btn {
+  background: #ef4444;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+}
+
+.center {
+  text-align: center;
+  margin-top: 80px;
+}
+
+.error {
+  text-align: center;
+  margin-top: 80px;
+  color: #ef4444;
+}
+
+.empty-state {
+  text-align: center;
+  margin-top: 60px;
+  opacity: 0.6;
 }
