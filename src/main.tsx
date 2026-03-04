@@ -4,7 +4,6 @@ import "./index.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client/react";  
 import client from "./apolloClient";
 import { ThemeProvider, CssBaseline } from "@mui/material";
@@ -13,9 +12,13 @@ import theme from "./theme/theme";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Products from "./pages/Products";
-
+import Orders from "./pages/Orders";
 import DashboardLayout from "./layouts/DashboardLayout";
 import DashboardHome from "./pages/DashboardHome";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
 
 
 const router = createBrowserRouter([
@@ -28,6 +31,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <DashboardHome /> },
       { path: "products", element: <Products /> },
+      { path: "orders", element: <Orders /> },
     ],
   },
 ]);

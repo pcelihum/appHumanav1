@@ -1,10 +1,22 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { gql } from "@apollo/client";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { useNavigate } from "react-router-dom";
 
-import Navbar from "../components/Navbar";
 import ProductCard from "../components/ProductCard";
+
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  TextField,
+  Typography,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 const GET_PRODUCTS = gql`
   query GetProducts {
@@ -45,47 +57,69 @@ const DELETE_PRODUCT = gql`
   }
 `;
 
-interface Product {
+type Product = {
   id: string;
   name: string;
-  description: string;
+  description?: string | null;
   price: number;
-}
+};
 
-function Products() {
+type GetProductsResponse = { products: Product[] };
+
+export default function Products() {
   const navigate = useNavigate();
 
-  const [showForm, setShowForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<Product | null>(null);
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     price: 0,
   });
 
-  type GetProductsResponse = {
-  products: Product[];
-};
-const { data, loading, error, refetch } =
-  useQuery<GetProductsResponse>(GET_PRODUCTS);
+  const { data, loading, error, refetch } = useQuery<GetProductsResponse>(GET_PRODUCTS);
   const [createProduct] = useMutation(CREATE_PRODUCT);
   const [updateProduct] = useMutation(UPDATE_PRODUCT);
   const [deleteProduct] = useMutation(DELETE_PRODUCT);
-  
 
-  const handleLogout = () => {
+  const title = useMemo(() => (editing ? "Edit product" : "Create product"), [editing]);
+
+  const logoutHard = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userId");
     navigate("/login");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const openCreate = () => {
+    setEditing(null);
+    setFormData({ name: "", description: "", price: 0 });
+    setOpen(true);
+  };
+
+  const openEdit = (p: Product) => {
+    setEditing(p);
+    setFormData({
+      name: p.name,
+      description: p.description ?? "",
+      price: p.price,
+    });
+    setOpen(true);
+  };
+
+  const close = () => {
+    setOpen(false);
+    setEditing(null);
+  };
+
+  const submit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
 
     try {
-      if (editingProduct) {
+      if (editing) {
         await updateProduct({
           variables: {
-            id: editingProduct.id,
+            id: editing.id,
             input: {
               name: formData.name,
               description: formData.description,
@@ -105,28 +139,15 @@ const { data, loading, error, refetch } =
         });
       }
 
-      setFormData({ name: "", description: "", price: 0 });
-      setEditingProduct(null);
-      setShowForm(false);
+      close();
       refetch();
     } catch (err) {
       console.error("Error saving product:", err);
     }
   };
 
-  const handleEdit = (product: Product) => {
-    setEditingProduct(product);
-    setFormData({
-      name: product.name,
-      description: product.description,
-      price: product.price,
-    });
-    setShowForm(true);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
-
+  const remove = async (id: string) => {
+    if (!window.confirm("Delete this product?")) return;
     try {
       await deleteProduct({ variables: { id } });
       refetch();
@@ -135,106 +156,94 @@ const { data, loading, error, refetch } =
     }
   };
 
-  const handleCancel = () => {
-    setShowForm(false);
-    setEditingProduct(null);
-    setFormData({ name: "", description: "", price: 0 });
-  };
-
-  if (loading) {
-    return <div className="center">Loading products...</div>;
-  }
+  if (loading) return <Box sx={{ p: 2 }}>Loading products...</Box>;
 
   if (error) {
     if (error.message.includes("Unauthorized") || error.message.includes("403")) {
-      localStorage.removeItem("token");
-      navigate("/login");
+      logoutHard();
       return null;
     }
-
-    return <div className="error">Error: {error.message}</div>;
+    return <Box sx={{ p: 2 }}>Error: {error.message}</Box>;
   }
 
+  const products = data?.products ?? [];
+
   return (
-    <div className="container">
-      {!showForm && (
-        <button className="primary-btn" onClick={() => setShowForm(true)}>
+    <Box sx={{ display: "grid", gap: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2 }}>
+        <Typography variant="h5" sx={{ fontWeight: 900 }}>
+          Products
+        </Typography>
+
+        <Button variant="contained" onClick={openCreate}>
           + Add New Gadget
-        </button>
-      )}
+        </Button>
+      </Box>
 
-      {showForm && (
-        <div className="form-card">
-          <h2>{editingProduct ? "Edit Product" : "Create Product"}</h2>
-
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Product name"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              required
-            />
-
-            <textarea
-              placeholder="Description"
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-            />
-
-            <input
-              type="number"
-              step="0.01"
-              placeholder="Price"
-              value={formData.price}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  price: Number(e.target.value),
-                })
-              }
-              required
-            />
-
-            <div className="form-actions">
-              <button type="submit" className="primary-btn">
-                {editingProduct ? "Update" : "Create"}
-              </button>
-
-              <button
-                type="button"
-                className="secondary-btn"
-                onClick={handleCancel}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      <div className="products-grid">
-        {data?.products.map((product: Product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))",
+          gap: 2,
+        }}
+      >
+        {products.map((p) => (
+          <ProductCard key={p.id} product={p} onEdit={openEdit} onDelete={remove} />
         ))}
-      </div>
+      </Box>
 
-      {data?.products.length === 0 && !showForm && (
-        <div className="empty-state">
-          No products found. Create your first gadget ⚡
-        </div>
+      {products.length === 0 && (
+        <Typography sx={{ opacity: 0.8 }}>No products found. Create your first gadget ⚡</Typography>
       )}
-    </div>
+
+      <Dialog open={open} onClose={close} fullWidth maxWidth="sm">
+        <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          {title}
+          <IconButton onClick={close}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+        <form onSubmit={submit}>
+          <DialogContent sx={{ display: "grid", gap: 2 }}>
+            <TextField
+              label="Product name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+              fullWidth
+            />
+
+            <TextField
+              label="Description"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              fullWidth
+              multiline
+              minRows={3}
+            />
+
+            <TextField
+              label="Price"
+              type="number"
+              inputProps={{ step: "0.01", min: 0 }}
+              value={formData.price}
+              onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+              required
+              fullWidth
+            />
+          </DialogContent>
+
+          <DialogActions sx={{ p: 3 }}>
+            <Button variant="outlined" type="button" onClick={close}>
+              Cancel
+            </Button>
+            <Button variant="contained" type="submit">
+              {editing ? "Update" : "Create"}
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </Box>
   );
 }
-
-export default Products;

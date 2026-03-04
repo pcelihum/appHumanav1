@@ -22,6 +22,8 @@ const LOGIN_MUTATION = gql`
   mutation Login($username: String!, $password: String!) {
     login(username: $username, password: $password) {
       token
+      userId
+      roles
     }
   }
 `;
@@ -29,12 +31,16 @@ const LOGIN_MUTATION = gql`
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const [login, { loading }] = useMutation(LOGIN_MUTATION, {
     onCompleted: (data) => {
       localStorage.setItem("token", data.login.token);
+      localStorage.setItem("userId", String(data.login.userId)); //
+      localStorage.setItem("roles", JSON.stringify(data.login.roles));
+      
       navigate("/products");
     },
     onError: (error) => {

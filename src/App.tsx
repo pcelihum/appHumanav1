@@ -42,7 +42,7 @@ function Title() {
        console.log('Hello') 
     },[])
     
-    const nameUser = "Diego"
+    const nameUser = "Patricio Celi"
     
     
     return <>
@@ -64,9 +64,7 @@ function NameUser(props: { name: string, lastName: string  }) {
     </>
 }
 
-function Role(){
-    return <span> Im a Frontend Developer </span>
-}
+
 
 function SubmitButton( ) {
     const [name, setName] = useState('Diego')
