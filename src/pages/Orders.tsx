@@ -396,7 +396,7 @@ export default function Orders() {
               Buscar por Usuario
             </button>
 
-            {/* ✅ Buscador por usuario (Autocomplete) */}
+            {/* Buscador por usuario (Autocomplete) */}
             {adminMode === "SEARCH" && (
               <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                 <Autocomplete
@@ -526,7 +526,9 @@ export default function Orders() {
               {createTarget === "USER" && (
                 <Autocomplete
                   disablePortal
-                  PopperProps={{ style: { zIndex: 20000 } }}
+                  slotProps={{
+                      popper: { style: { zIndex: 9999 } }
+                    }}
                   options={usersCustomers}
                   loading={usersQuery.loading}
                   value={selectedUser}

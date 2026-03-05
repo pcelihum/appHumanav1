@@ -35,18 +35,29 @@ function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const [login, { loading }] = useMutation(LOGIN_MUTATION, {
-    onCompleted: (data) => {
-      localStorage.setItem("token", data.login.token);
-      localStorage.setItem("userId", String(data.login.userId)); //
-      localStorage.setItem("roles", JSON.stringify(data.login.roles));
-      
-      navigate("/products");
-    },
-    onError: (error) => {
-      setError(error.message);
+ const [login, { loading }] = useMutation(LOGIN_MUTATION, {
+  onCompleted: (data) => {
+    const d = data as any;
+
+    const token = d?.login?.token;
+    const userId = d?.login?.userId;
+    const roles = d?.login?.roles;
+
+    if (!token) {
+      setError("Login sin token (respuesta inesperada)");
+      return;
     }
-  });
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("userId", String(userId ?? ""));
+    localStorage.setItem("roles", JSON.stringify(roles ?? []));
+
+    navigate("/products");
+  },
+  onError: (error) => {
+    setError(error.message);
+  },
+});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

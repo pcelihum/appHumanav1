@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { gql } from "@apollo/client";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { useNavigate } from "react-router-dom";
+import type { FormEvent } from "react";
 
 import ProductCard from "../components/ProductCard";
 
@@ -112,7 +113,7 @@ export default function Products() {
     setEditing(null);
   };
 
-  const submit = async (e?: React.FormEvent) => {
+const submit = async (e?: FormEvent) => {
     e?.preventDefault();
 
     try {
@@ -188,8 +189,13 @@ export default function Products() {
         }}
       >
         {products.map((p) => (
-          <ProductCard key={p.id} product={p} onEdit={openEdit} onDelete={remove} />
-        ))}
+            <ProductCard
+              key={p.id}
+              product={{ ...p, description: p.description ?? null }}
+              onEdit={openEdit}
+              onDelete={remove}
+            />
+          ))}
       </Box>
 
       {products.length === 0 && (

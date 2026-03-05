@@ -47,7 +47,7 @@ function Title() {
     
     return <>
     <h1> Hello Im <NameUser name={nameUser} lastName={lastName}/> </h1>
-        <button onClick={() => setLastName('Gaibor')}> Change lastname</button>
+        <button onClick={() => setLastName('Patricio Celi')}> Change lastname</button>
         <button onClick={() => setCount((count)=> count + 1)}>
             count is {count}
         </button>
@@ -64,34 +64,6 @@ function NameUser(props: { name: string, lastName: string  }) {
     </>
 }
 
-
-
-function SubmitButton( ) {
-    const [name, setName] = useState('Diego')
-    const [age, setAge]= useState(20)
-  
-    
-    const handleClick = (id: string) => {
-        setName("Changed Name " + id)
-        setAge(25)
-        alert("Form Submitted! " + name)
-        
-    }
-    const getButtonName = () => {
-        return "Click Here " + name
-    }
-    
-
-    
-    
-    return (
-        <>
-            <button onClick={()=>handleClick('23123')}> {getButtonName()} {age}</button>
-            <Title/>
-        </>
-    )
-    
-}
 
 
 

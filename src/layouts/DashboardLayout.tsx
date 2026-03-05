@@ -63,8 +63,6 @@ export default function DashboardLayout() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const openMenu = Boolean(anchorEl);
-
   const token = localStorage.getItem("token") ?? "";
   const userId = localStorage.getItem("userId") ?? "";
 
