@@ -28,10 +28,11 @@ export default function Register() {
   const [success, setSuccess] = useState("");
 
   const navigate = useNavigate();
-
   const [register, { loading }] = useMutation(REGISTER_MUTATION, {
     onCompleted: (data) => {
-      setSuccess(data.register ?? "Usuario registrado");
+      const d = data as { register?: string | null };
+
+      setSuccess(d.register ?? "Usuario registrado");
       setError("");
       setTimeout(() => navigate("/login"), 1200);
     },
